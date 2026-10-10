@@ -1,7 +1,5 @@
 # DOTIRO Chapter 1 playable preview
 
-Static browser game for GitHub Pages. The published game files are in `site/`.
+Static browser game for GitHub Pages. The game source and published files are in `game/`.
 
-## Publish
-
-GitHub Actions publishes `site/` to GitHub Pages on every push to `main`.
+GitHub Actions publishes `game/` to GitHub Pages on every push to `main`.
