@@ -45,11 +45,46 @@ function hint(l,s){
  return {solvable:false,cell:-1,rewindTo:-1};
 }
 
+// A complete route is generated first; each symbol occupies one contiguous run.
+const baseLevels=chapter.levels.map(l=>JSON.parse(JSON.stringify(l)));
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function randomRoute(base){
+ let budget=6000;const path=[],seen=new Set();
+ function visit(i){if(--budget<0)return false;path.push(i);seen.add(i);if(path.length===25)return true;
+ const next=shuffle(neighbors(base,i).filter(n=>!seen.has(n))).sort((a,b)=>neighbors(base,a).filter(n=>!seen.has(n)).length-neighbors(base,b).filter(n=>!seen.has(n)).length);
+ for(const n of next)if(visit(n))return true;seen.delete(i);path.pop();return false;}
+ const start=shuffle(Array.from({length:25},(_,i)=>i).filter(i=>(i%5+Math.floor(i/5))%2===0))[0];
+ return visit(start)?path:base.solution.slice();
+}
+function validBoard(b){try{validateLevel(b);if(b.width!==5||b.height!==5||!Array.isArray(b.solution)||b.solution.length!==25||new Set(b.cells).size!==5||b.cells.some(c=>!['red','green','blue','gold','brown'].includes(c)))return false;let st=createState(b);for(const i of b.solution){const r=move(b,st,i);if(!r.ok||r.backtracked)return false;st=r.state}return summary(b,st).won}catch{return false}}
+function generateBoard(index,previous){
+ const base=baseLevels[index],target=[35,60,90,140,200,260][index];let best=null,score=Infinity;
+ for(let k=0;k<24;k++){
+  const route=randomRoute(base),colors=shuffle(['red','green','blue','gold','brown']),sizes=[3,3,3,3,3];for(let n=0;n<10;n++)sizes[Math.floor(Math.random()*5)]++;
+  const cells=Array(25);let at=0;colors.forEach((c,j)=>{for(let n=0;n<sizes[j];n++)cells[route[at++]]=c});
+  if(previous&&cells.join()===previous.cells.join())continue;
+  const board={...base,cells,start:route[0],solution:route};
+  const result=solve(board,{maxNodes:8000,maxSolutions:100});if(!result.exhaustive)continue;
+  const distance=Math.abs(Math.log((result.nodes+1)/(target+1)));
+  if(distance<score){best=board;score=distance}if(score<.15)break;
+ }
+ // Relabeling a known solution is a bounded, always-solvable fallback.
+ if(!best){const colors=['red','green','blue','gold','brown'],old=previous||base;const cells=old.cells.map(c=>colors[(colors.indexOf(c)+1)%5]);best={...old,cells,solution:old.solution.slice()}}
+ return best;
+}
+
 const A=document.querySelector('#app'), symbols={red:'◉',green:'✿',blue:'☾',gold:'▲',brown:'✚'};
 const names=['天空与远山','树林','小屋','庭院','花草','小惊喜'];
 const positions=[[15,15],[83,29],[25,44],[68,60],[24,76],[80,90]];
 const key='dotiro.chapter1.v1';let saved={completed:0,level:0,paths:{},sound:false};
 try{const raw=JSON.parse(localStorage.getItem(key));if(raw&&Number.isInteger(raw.completed)&&raw.completed>=0&&raw.completed<=6){saved={...saved,...raw};saved.paths=raw.paths||{};saved.level=Math.max(0,Math.min(5,Number(raw.level)||0));}}catch{}
+saved.boards=saved.boards&&typeof saved.boards==='object'?saved.boards:{};
+saved.tutorialSeen=Boolean(saved.tutorialSeen||saved.completed>0||saved.paths[0]?.length);
+for(let i=0;i<6;i++){
+ const stored=saved.boards[i];
+ if(validBoard(stored))chapter.levels[i]=stored;
+ else{delete saved.boards[i];if(stored)delete saved.paths[i];else if(saved.paths[i]?.length)saved.boards[i]=baseLevels[i];}
+}
 let page='home',level=saved.level,state={path:[]},activePointer=null,saveFailed=false,timer=null,raf=0,animationToken=0,hinted=-1;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cloth=new Image(),layers=Array.from({length:6},()=>new Image());let ready=false;
@@ -104,7 +139,17 @@ function icon(type){const r=type==='undo'?[56,1572,84,87]:type==='restart'?[356,
 function mapThread(){return positions.reduce((d,p,i)=>{if(!i)return `M${p[0]} ${p[1]}`;const a=positions[i-1],mid=(a[1]+p[1])/2;return d+` C${a[0]} ${mid} ${p[0]} ${mid} ${p[0]} ${p[1]}`},'')}
 function drawMap(){const c=A.querySelector('#map-art');if(!c)return;const r=c.getBoundingClientRect();if(!r.width||!r.height)return;const ratio=Math.min(devicePixelRatio||1,2);c.width=Math.round(r.width*ratio);c.height=Math.round(r.height*ratio);const x=c.getContext('2d');fabric(x,c.width,c.height);const artHeight=c.width/3;x.drawImage(completedCanvas(saved.completed),0,0,c.width,artHeight)}
 let catSoundPlayed=false;
-function openLevel(i,{fresh=false}={}){stop();catSoundPlayed=false;level=i;saved.level=i;let path=fresh?[]:saved.paths[i]||[];state=createState(chapter.levels[i]);for(const cell of path){const result=move(chapter.levels[i],state,cell);if(!result.ok)break;state=result.state}if(summary(chapter.levels[i],state).won)state=createState(chapter.levels[i]);page='play';persist();render()}
+function openLevel(i,{fresh=false}={}){
+ stop();catSoundPlayed=false;level=i;saved.level=i;
+ let board=saved.boards[i],path=saved.paths[i]||[];
+ // Selecting an unfinished replay resumes it; completed attempts get a new board.
+ const needsNew=!board||(fresh&&path.length===25);
+ if(needsNew){board=i===0&&!saved.tutorialSeen?JSON.parse(JSON.stringify(baseLevels[0])):generateBoard(i,board);saved.boards[i]=board;path=[];saved.paths[i]=[];if(i===0)saved.tutorialSeen=true}
+ chapter.levels[i]=board;state=createState(board);
+ for(const cell of path){const result=move(board,state,cell);if(!result.ok)break;state=result.state}
+ if(summary(board,state).won)state=createState(board);
+ saved.paths[i]=state.path.slice();page='play';persist();render();
+}
 let displayed=0;function targetAmount(){return level+Math.max(0,state.path.length-1)/(chapter.levels[level].cells.length-1)}
 let paintTarget=0,paintRunning=false,lastPaintTime=0,lastPathKey=null;
 function finishAfterPaint(){if(page!=='play'||timer||!summary(chapter.levels[level],state).won||Math.abs(displayed-targetAmount())>.0001)return;const finishedLevel=level;timer=setTimeout(()=>{timer=null;if(page!=='play'||level!==finishedLevel||!summary(chapter.levels[level],state).won)return;if(level===5)nav('gallery');else openLevel(level+1,{fresh:true})},level===5?1300:750)}
@@ -126,7 +171,7 @@ let audio;
 function audioContext(){audio??=new(window.AudioContext||window.webkitAudioContext)();audio.resume();return audio}
 function tone(){if(!saved.sound)return;try{const a=audioContext(),t=a.currentTime,b=a.createBuffer(1,a.sampleRate*.14,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/d.length*5);const src=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();src.buffer=b;f.type='bandpass';f.frequency.value=1600;f.Q.value=.7;g.gain.setValueAtTime(.065,t);g.gain.exponentialRampToValueAtTime(.001,t+.14);src.connect(f).connect(g).connect(a.destination);src.start(t);src.stop(t+.15)}catch{}}
 function meow(){if(!saved.sound)return;try{const a=audioContext(),t=a.currentTime,o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();o.type='sawtooth';o.frequency.setValueAtTime(680,t);o.frequency.exponentialRampToValueAtTime(940,t+.13);o.frequency.exponentialRampToValueAtTime(440,t+.52);f.type='lowpass';f.frequency.value=1700;g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.026,t+.08);g.gain.exponentialRampToValueAtTime(.001,t+.58);o.connect(f).connect(g).connect(a.destination);o.start(t);o.stop(t+.6)}catch{}}
-function showReset(){stop();const dialog=document.createElement('dialog');dialog.className='reset-dialog';dialog.innerHTML='<form method="dialog"><h2>重新开始绣？</h2><p>将清空六关进度和当前连线。</p><div><button value="cancel">取消</button><button value="reset">重置进度</button></div></form>';document.body.append(dialog);dialog.addEventListener('close',()=>{if(dialog.returnValue==='reset'){const sound=saved.sound;saved={completed:0,level:0,paths:{},sound};persist();openLevel(0,{fresh:true})}dialog.remove()});dialog.showModal()}
+function showReset(){stop();const dialog=document.createElement('dialog');dialog.className='reset-dialog';dialog.innerHTML='<form method="dialog"><h2>重新开始绣？</h2><p>将清空六关进度和当前连线。</p><div><button value="cancel">取消</button><button value="reset">重置进度</button></div></form>';document.body.append(dialog);dialog.addEventListener('close',()=>{if(dialog.returnValue==='reset'){const sound=saved.sound;saved={completed:0,level:0,paths:{},boards:{},tutorialSeen:saved.tutorialSeen,sound};persist();openLevel(0,{fresh:true})}dialog.remove()});dialog.showModal()}
 // Safari toolbars change the visible viewport without a navigation.
 function syncViewport(){cancelDrag();document.documentElement.style.setProperty('--app-height',`${Math.round(window.visualViewport?.height||innerHeight)}px`);if(page==='map'&&ready)requestAnimationFrame(drawMap)}
 syncViewport();window.visualViewport?.addEventListener('resize',syncViewport);window.addEventListener('resize',syncViewport);
