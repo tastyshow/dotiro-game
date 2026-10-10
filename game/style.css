@@ -21,3 +21,12 @@ body:has(.game-shell){overflow:hidden}#app:has(.game-shell){height:var(--app-hei
 /* Anchor each atlas cutout on its needle eye without stretching the embroidery. */
 .symbol{width:92%;height:auto;aspect-ratio:1;flex:none;overflow:visible}.symbol .symbol-art{width:100%;height:100%;overflow:visible}
 .cell.head:before{right:auto;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* v8: portrait chapter map, explicit save-and-exit, continuous root linen. */
+html{background:#ead5b8 url('assets/fabric-approved.svg') repeat;background-size:180px 110px;min-height:100%;color-scheme:light}
+body{background:transparent}.header-actions{display:flex;align-items:center;gap:12px}.exit-game{display:flex;align-items:center;gap:4px;min-height:44px;border:0;background:none;padding:0 4px;font-size:15px}.exit-game .control-icon{width:25px;height:29px}
+.map{height:auto;aspect-ratio:0.72;margin:12px 6px 18px}.map canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:6px}.map .node{width:clamp(48px,15vw,72px);height:clamp(48px,15vw,72px)}
+.map-thread path{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.map-thread .pending-thread{stroke:#ab8b66;stroke-width:3px;stroke-dasharray:7 9}
+.map-thread .rope-shadow{stroke:#825030;stroke-width:7px;stroke-dasharray:none}.map-thread .rope-main{stroke:#c48b50;stroke-width:5px;stroke-dasharray:none}.map-thread .rope-stitches{stroke:#f3ce96;stroke-width:2px;stroke-dasharray:2 4}
+@media(display-mode:standalone){body{min-height:100dvh}#app{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}

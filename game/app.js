@@ -75,7 +75,7 @@ function generateBoard(index,previous){
 
 const A=document.querySelector('#app'), symbols={red:'◉',green:'✿',blue:'☾',gold:'▲',brown:'✚'};
 const names=['天空与远山','树林','小屋','庭院','花草','小惊喜'];
-const positions=[[15,15],[83,29],[25,44],[68,60],[24,76],[80,90]];
+const positions=[[15,10],[85,39],[29,53],[66,68],[22,81],[82,92]];
 const key='dotiro.chapter1.v1';let saved={completed:0,level:0,paths:{},sound:false};
 try{const raw=JSON.parse(localStorage.getItem(key));if(raw&&Number.isInteger(raw.completed)&&raw.completed>=0&&raw.completed<=6){saved={...saved,...raw};saved.paths=raw.paths||{};saved.level=Math.max(0,Math.min(5,Number(raw.level)||0));}}catch{}
 saved.boards=saved.boards&&typeof saved.boards==='object'?saved.boards:{};
@@ -87,6 +87,8 @@ for(let i=0;i<6;i++){
 }
 let page='home',level=saved.level,state={path:[]},activePointer=null,saveFailed=false,timer=null,raf=0,animationToken=0,hinted=-1;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mapBase=new Image(),mapComplete=new Image();
+for(const [im,file] of [[mapBase,'map-portrait-base.png'],[mapComplete,'map-portrait-complete.png']]){im.onload=()=>{if(page==='map'&&ready)drawMap()};im.src='assets/'+file}
 const cloth=new Image(),layers=Array.from({length:6},()=>new Image());let ready=false;
 Promise.all([cloth,...layers].map((im,i)=>new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=reject;im.src=i===0?'assets/fabric-approved.svg':`assets/layers/${String(i).padStart(2,'0')}.png`}))).then(()=>{prepareStitches();ready=true;render()}).catch(()=>{A.innerHTML='<p>绣布暂时没能展开。</p><button onclick="location.reload()">重试</button>'});
 let saveTimer=0;
@@ -127,17 +129,40 @@ function label(text){if(text==='连完同一种图案')return `<span class="stit
 function fabricButton(action,text){return `<button class="fabric-button" data-action="${action}" aria-label="${text}">${sprite(text)}</button>`}
 function frame(){return crop('play-skin.png',[0,231,863,352],863,1823,'frame-sprite')}
 function soundButton(){return `<button class="sound" data-action="sound" aria-label="${saved.sound?'关闭':'打开'}声音" aria-pressed="${saved.sound}">${crop('play-skin.png',[723,16,122,124],863,1823)}</button>`}
-function header(){return `<header><button class="logo" data-action="${page==='play'?'map':'home'}" aria-label="${page==='play'?'回到画卷':'回到首页'}"></button>${soundButton()}</header>`}
+function header(){return `<header><button class="logo" data-action="${page==='play'?'map':'home'}" aria-label="${page==='play'?'回到画卷':'回到首页'}"></button><div class="header-actions">${page==='play'?`<button class="exit-game" data-action="map" aria-label="退出并保存，返回选关">${icon('undo')}<span class="thread-text">退出</span></button>`:''}${soundButton()}</div></header>`}
 function render(){if(!ready){A.innerHTML='<p class="instruction">正在展开绣布…</p>';return}let html=header();if(page==='home'){html=`<section class="home-exact"><div class="home-main">${crop('home-transparent-v4.png',[0,15,864,1585],864,1821,'home-art')}<button class="home-hotspot home-sound" data-action="sound" aria-label="${saved.sound?'关闭':'打开'}声音" aria-pressed="${saved.sound}"></button><button class="home-hotspot home-start" data-action="continue" aria-label="${saved.completed===6?'再绣一次':'一起绣'}"></button></div><div class="home-footer">${fabricButton('reset','重置进度')}<button class="quiet" data-action="album" aria-label="作品册">${label('作品册')}</button></div></section>`}
 if(page==='album'){html+=`<h1>${label('作品册')}</h1><section class="patch">${frame()}${art()}<div class="card-bottom"><div><h2>${label('林间小屋')}</h2><div class="collection-dots">${Array.from({length:6},(_,i)=>`<i class="${i<saved.completed?'filled':''}">${crop('ui-atlas-v4.png',[i<saved.completed?20:649,659,270,270],1254,1254)}</i>`).join('')}</div></div>${fabricButton('map',saved.completed===6?'再绣一次':'继续')}</div></section><section class="patch upcoming">${frame()}${label('待开启')}</section>${back()}`}
-if(page==='map'){html+=`<div class="title"><h1>${label('林间小屋')}</h1><span class="counter">${saved.completed?digit(saved.completed):'<span>0</span>'}<b>/</b>${digit(6)}</span></div><section class="map">${frame()}<canvas id="map-art" width="1086" height="1450" aria-label="章节画卷"></canvas><svg class="map-thread" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${mapThread()}" fill="none" stroke="#865133" stroke-width="1.1" stroke-linecap="round"/><path d="${mapThread()}" fill="none" stroke="#dca16b" stroke-width=".75" stroke-linecap="round"/><path d="${mapThread()}" fill="none" stroke="#f3cd99" stroke-width=".3" stroke-dasharray=".6 .45"/></svg>${positions.map(([x,y],i)=>`<button class="node ${i<saved.completed?'done':i===saved.completed?'current':''}" style="left:${x}%;top:${y}%" data-level="${i}" ${i>saved.completed?'disabled':''} aria-label="第${i+1}关${i<saved.completed?'，已完成':i===saved.completed?'，继续':'，待开启'}">${crop('ui-atlas-v4.png',[i<saved.completed?20:i===saved.completed?334:649,659,270,270],1254,1254,'node-cloth')}${digit(i+1)}${i<saved.completed?crop('ui-atlas-v4.png',[995,700,185,195],1254,1254,'node-check'):''}</button>`).join('')}</section><div class="map-footer">${back()}${saved.completed===6?fabricButton('gallery','欣赏作品'):''}</div>`}
+if(page==='map'){html+=`<div class="title"><h1>${label('林间小屋')}</h1><span class="counter">${saved.completed?digit(saved.completed):'<span>0</span>'}<b>/</b>${digit(6)}</span></div><section class="map">${frame()}<canvas id="map-art" width="1086" height="1450" aria-label="章节画卷"></canvas><svg class="map-thread" viewBox="0 0 100 100" preserveAspectRatio="none">${mapThreads()}</svg>${positions.map(([x,y],i)=>`<button class="node ${i<saved.completed?'done':i===saved.completed?'current':''}" style="left:${x}%;top:${y}%" data-level="${i}" ${i>saved.completed?'disabled':''} aria-label="第${i+1}关${i<saved.completed?'，已完成':i===saved.completed?'，继续':'，待开启'}">${crop('ui-atlas-v4.png',[i<saved.completed?20:i===saved.completed?334:649,659,270,270],1254,1254,'node-cloth')}${digit(i+1)}${i<saved.completed?crop('ui-atlas-v4.png',[995,700,185,195],1254,1254,'node-check'):''}</button>`).join('')}</section><div class="map-footer">${back()}${saved.completed===6?fabricButton('gallery','欣赏作品'):''}</div>`}
 if(page==='gallery'){html+=`<section class="gallery-page"><h1>${label('林间小屋')}${label('绣好了')}</h1><section class="gallery art-frame">${frame()}${art()}</section><div class="actions">${fabricButton('map','再绣一次')}${fabricButton('album','作品册')}</div>${back()}</section>`}
 if(page==='play'){const l=chapter.levels[level];html=`<section class="game-shell">${header()}<div class="chapter-heading"><h1>${label('林间小屋')}</h1><span class="stage-count">${digit(level+1)}<b>/</b>${digit(6)}</span></div><div class="art-frame">${frame()}${art()}</div><div class="progress-dots" aria-label="第${level+1}关">${Array.from({length:6},(_,i)=>`<i class="${i<=level?'filled':''}">${crop('ui-atlas-v4.png',[i<=level?20:649,659,270,270],1254,1254)}</i>`).join('')}</div><div class="board-space"><div class="board" id="board" tabindex="0" aria-label="5乘5连线棋盘">${crop('play-skin.png',[45,628,775,765],863,1823,'frame-sprite')}<div class="cells">${l.cells.map((c,i)=>`<button class="cell ${c}" data-cell="${i}" aria-label="第${Math.floor(i/5)+1}行第${i%5+1}列${({red:'圆环',green:'四瓣花',blue:'月牙',gold:'三角',brown:'十字'})[c]}"><span class="start-marker" aria-hidden="true">${icon('hint')}</span><span class="symbol">${symbolArt(c)}</span></button>`).join('')}</div><svg class="route" viewBox="0 0 100 100"><defs><pattern id="twisted-thread" width="1.2" height="1.2" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="1.2" height="1.2" fill="#b6533d"/><path d="M0 0H1.2" stroke="#efb18b" stroke-width=".3"/><path d="M0 1H1.2" stroke="#7c3627" stroke-width=".2"/></pattern></defs><polyline class="thread-shadow" id="thread-shadow"/><polyline id="line"/><polyline class="stitch" id="stitch"/><path id="loose-thread"/><g id="needle"><path d="M-4-7 0 0"/><ellipse cx="-4" cy="-7" rx=".45" ry="1" transform="rotate(-30 -4 -7)"/></g></svg></div></div><div class="message-space"><p class="instruction" id="instruction" role="status"></p><div id="finish" class="finish"></div></div><div class="toolbar"><button data-action="undo" aria-label="退一针">${crop('play-skin.png',[50,1560,225,114],863,1823)}</button><button data-action="restart" aria-label="重来">${crop('play-skin.png',[350,1560,183,114],863,1823)}</button><button data-action="hint" aria-label="提示">${crop('play-skin.png',[622,1560,187,114],863,1823)}</button></div></section>`}
 
 html+='<p class="save-error" id="save-error" role="status"></p>';A.innerHTML=html;A.querySelector('#save-error').textContent=saveFailed?'暂时无法保存进度，离开后可能丢失。':'';if(page==='play'){bindBoard();update()}else if(page==='map')drawMap();else draw(A.querySelector('#art'),saved.completed)}
 function icon(type){const r=type==='undo'?[56,1572,84,87]:type==='restart'?[356,1570,90,90]:[629,1564,86,98];return crop('play-skin.png',r,863,1823,'control-icon')}
-function mapThread(){return positions.reduce((d,p,i)=>{if(!i)return `M${p[0]} ${p[1]}`;const a=positions[i-1],mid=(a[1]+p[1])/2;return d+` C${a[0]} ${mid} ${p[0]} ${mid} ${p[0]} ${p[1]}`},'')}
-function drawMap(){const c=A.querySelector('#map-art');if(!c)return;const r=c.getBoundingClientRect();if(!r.width||!r.height)return;const ratio=Math.min(devicePixelRatio||1,2);c.width=Math.round(r.width*ratio);c.height=Math.round(r.height*ratio);const x=c.getContext('2d');fabric(x,c.width,c.height);const artHeight=c.width/3;x.drawImage(completedCanvas(saved.completed),0,0,c.width,artHeight)}
+function mapThread(from=0,to=5){return positions.slice(from,to+1).reduce((d,p,i)=>{if(!i)return `M${p[0]} ${p[1]}`;const a=positions[from+i-1],mid=(a[1]+p[1])/2;return d+` C${a[0]} ${mid} ${p[0]} ${mid} ${p[0]} ${p[1]}`},'')}
+function mapThreads(){const end=Math.min(5,saved.completed);return `<path class="pending-thread" d="${mapThread(end)}"/><path class="rope-shadow" d="${mapThread(0,end)}"/><path class="rope-main" d="${mapThread(0,end)}"/><path class="rope-stitches" d="${mapThread(0,end)}"/>`}
+
+function mapRevealRegions(n){
+ if(n>=6)return ['M0 0H100V100H0Z'];
+ const regions=[];
+ if(n>=1)regions.push('M0 0H100V20L87 25L77 33L64 31L52 37L38 29L28 35L19 26L12 18L0 17Z');
+ if(n>=2)regions.push('M0 0H100V62H0Z M44 43V61H85V43Z');
+ if(n>=3)regions.push('M0 0H100V63H0Z');
+ if(n>=4)regions.push('M49 60L58 60L53 68L47 71L65 78L62 85L43 85L43 79L53 77L39 72Z','M19 62H41V66H19Z','M62 62H81V66H62Z');
+ if(n>=5)regions.push('M0 61H100V100H0Z');
+ return regions;
+}
+function drawMap(){
+ const c=A.querySelector('#map-art');if(!c)return;const r=c.getBoundingClientRect();if(!r.width||!r.height)return;
+ const ratio=Math.min(devicePixelRatio||1,2);c.width=Math.round(r.width*ratio);c.height=Math.round(r.height*ratio);const x=c.getContext('2d');fabric(x,c.width,c.height);
+ if(!mapBase.complete||!mapBase.naturalWidth)return;
+ // Both maps use the same portrait composition; progress reveals only earned regions.
+ const n=saved.completed;c.dataset.completed=n;
+ const regions=mapRevealRegions(n);for(let i=0;i<regions.length;i++){
+  const finalRegion=n>=6||(n>=4&&i>=3);const im=finalRegion&&mapComplete.complete&&mapComplete.naturalWidth?mapComplete:mapBase;
+  x.save();x.scale(c.width/100,c.height/100);x.clip(new Path2D(regions[i]),'evenodd');x.drawImage(im,0,0,100,100);x.restore();
+ }
+}
+
 let catSoundPlayed=false;
 function openLevel(i,{fresh=false}={}){
  stop();catSoundPlayed=false;level=i;saved.level=i;
