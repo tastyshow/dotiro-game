@@ -1,0 +1,56 @@
+[
+  {
+    "label": "1A",
+    "solutions": 8,
+    "wrongBranches": 16,
+    "delayedBranches": 14,
+    "longestDeadContinuation": 27,
+    "delayCapped": 0,
+    "forks": 15
+  },
+  {
+    "label": "1B",
+    "solutions": 2,
+    "wrongBranches": 15,
+    "delayedBranches": 13,
+    "longestDeadContinuation": 28,
+    "delayCapped": 0,
+    "forks": 14
+  },
+  {
+    "label": "1C",
+    "solutions": 2,
+    "wrongBranches": 15,
+    "delayedBranches": 13,
+    "longestDeadContinuation": 27,
+    "delayCapped": 0,
+    "forks": 14
+  },
+  {
+    "label": "2A",
+    "solutions": 4,
+    "wrongBranches": 18,
+    "delayedBranches": 13,
+    "longestDeadContinuation": 30,
+    "delayCapped": 0,
+    "forks": 18
+  },
+  {
+    "label": "2B",
+    "solutions": 2,
+    "wrongBranches": 17,
+    "delayedBranches": 12,
+    "longestDeadContinuation": 29,
+    "delayCapped": 0,
+    "forks": 16
+  },
+  {
+    "label": "2C",
+    "solutions": 1,
+    "wrongBranches": 18,
+    "delayedBranches": 13,
+    "longestDeadContinuation": 29,
+    "delayCapped": 0,
+    "forks": 16
+  }
+]
