@@ -41,7 +41,7 @@ function serialize(state){return JSON.stringify(state)}
 function unlocked(state,id){const s=getStage(id);return !s.unlockAfter||state.permanent.completedStageIds.includes(s.unlockAfter)}
 function artwork(state,chapterId,{mode='permanent',attempt=null}={}){const chapter=getChapter(chapterId);let amount;
  if(mode==='permanent'){amount=0;for(const id of chapter.stageIds){if(state.permanent.completedStageIds.includes(id))amount++;else break}}
- else if(mode==='attempt'){if(!attempt||attempt.chapterId!==chapterId)throw Error('Attempt chapter mismatch');amount=getStage(attempt.stageId).order-1+Math.max(0,attempt.path.length-1)/(attempt.boardSnapshot.cells.length-1)}else throw Error('Unknown artwork mode');
+ else if(mode==='attempt'){if(!attempt||attempt.chapterId!==chapterId)throw Error('Attempt chapter mismatch');amount=getStage(attempt.stageId).order-1+(chapter.artwork.revealGroupsPerStage?attempt.path.length/chapter.artwork.revealGroupsPerStage:Math.max(0,attempt.path.length-1)/(attempt.boardSnapshot.cells.length-1))}else throw Error('Unknown artwork mode');
  const layers=chapter.artwork.layerUrls.map((url,i)=>({layerId:getStage(chapter.stageIds[i]).reveal.layerId,url,progress:Math.max(0,Math.min(1,amount-i)),masterId:chapter.artwork.masterId}));
  return {mode,chapterId,amount,layers,catVisible:!!chapter.artwork.cat&&amount>chapter.artwork.cat.layerIndex,artworkStatus:chapter.artworkStatus,masterId:chapter.artwork.masterId};
 }

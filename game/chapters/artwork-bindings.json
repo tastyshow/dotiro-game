@@ -250,5 +250,93 @@
     "visualAcceptance": "pending-user",
     "assetFit": "contain",
     "sourcePackage": "outputs/chapter-04-map-v1"
+  },
+  "cabin": {
+    "title": "林间小屋",
+    "masterId": "chapter-01-coarse-v1",
+    "clothUrl": "assets/chapters/cabin-coarse-v1/cloth.png",
+    "layerUrls": [
+      "assets/chapters/cabin-coarse-v1/layers/01.png",
+      "assets/chapters/cabin-coarse-v1/layers/02.png",
+      "assets/chapters/cabin-coarse-v1/layers/03.png",
+      "assets/chapters/cabin-coarse-v1/layers/04.png",
+      "assets/chapters/cabin-coarse-v1/layers/05.png",
+      "assets/chapters/cabin-coarse-v1/layers/06.png"
+    ],
+    "stageReveal": [
+      {
+        "stageId": "cabin-01",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 0,
+          "layerId": "cabin-coarse-layer-01",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/01.png",
+          "mode": "path-progress-grid25",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "cabin-02",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 1,
+          "layerId": "cabin-coarse-layer-02",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/02.png",
+          "mode": "path-progress-grid25",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "cabin-03",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 2,
+          "layerId": "cabin-coarse-layer-03",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/03.png",
+          "mode": "path-progress-grid25",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "cabin-04",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 3,
+          "layerId": "cabin-coarse-layer-04",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/04.png",
+          "mode": "path-progress-grid25",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "cabin-05",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 4,
+          "layerId": "cabin-coarse-layer-05",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/05.png",
+          "mode": "path-progress-grid25",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "cabin-06",
+        "reveal": {
+          "masterId": "chapter-01-coarse-v1",
+          "stageIndex": 5,
+          "layerId": "cabin-coarse-layer-06",
+          "layerUrl": "assets/chapters/cabin-coarse-v1/layers/06.png",
+          "mode": "path-progress-grid25",
+          "cat": true
+        }
+      }
+    ],
+    "visualAcceptance": "approved-for-playtest-with-stage02-join-followup",
+    "assetFit": "contain",
+    "sourcePackage": "outputs/chapter-01-coarse-v1-grid25-delivery",
+    "catIdentity": "approved-cabin-cat",
+    "revealGroupsPerStage": 25,
+    "stitchLabels": "outputs/chapter-01-coarse-v1/work/stitch-regions",
+    "artworkStatus": "approved-coarse-first-chapter-playtest"
   }
 }

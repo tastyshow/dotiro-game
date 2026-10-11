@@ -13,9 +13,9 @@
       "chapterId": "cabin",
       "order": 1,
       "title": "林间小屋",
-      "titleStatus": "confirmed",
+      "titleStatus": "confirmed-existing-theme",
       "gameplayStatus": "playable-module",
-      "artworkStatus": "existing-layers-map-consistency-pending",
+      "artworkStatus": "approved-coarse-first-chapter-playtest",
       "stageIds": [
         "cabin-01",
         "cabin-02",
@@ -26,14 +26,14 @@
       ],
       "unlockAfter": null,
       "artwork": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "layerUrls": [
-          "assets/layers/01.png",
-          "assets/layers/02.png",
-          "assets/layers/03.png",
-          "assets/layers/04.png",
-          "assets/layers/05.png",
-          "assets/layers/06.png"
+          "assets/chapters/cabin-coarse-v1/layers/01.png",
+          "assets/chapters/cabin-coarse-v1/layers/02.png",
+          "assets/chapters/cabin-coarse-v1/layers/03.png",
+          "assets/chapters/cabin-coarse-v1/layers/04.png",
+          "assets/chapters/cabin-coarse-v1/layers/05.png",
+          "assets/chapters/cabin-coarse-v1/layers/06.png"
         ],
         "coverStrategy": "same-layer-stack",
         "mapAsset": null,
@@ -41,13 +41,18 @@
         "mapBindingStatus": "same-layer-stack-contained-panorama",
         "cat": {
           "layerIndex": 5,
-          "sourceUrl": "assets/layers/06.png",
+          "sourceUrl": "assets/chapters/cabin-coarse-v1/layers/06.png",
           "revealStageId": "cabin-06",
-          "visibility": "only-current-stage-6-progress-or-permanent-stage-6",
+          "visibility": "stage-6-progress-only",
           "noBlankSilhouette": true
         },
-        "mapStrategy": "contained-panorama-in-vertical-layout"
-      }
+        "mapStrategy": "contained-panorama-in-vertical-layout",
+        "clothUrl": "assets/chapters/cabin-coarse-v1/cloth.png",
+        "assetFit": "contain",
+        "sourcePackage": "outputs/chapter-01-coarse-v1-grid25-delivery",
+        "revealGroupsPerStage": 25
+      },
+      "visualAcceptance": "approved-for-playtest-with-stage02-join-followup"
     },
     {
       "chapterId": "chapter-02",
@@ -272,13 +277,13 @@
       },
       "unlockAfter": null,
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 0,
-        "layerId": "cabin-layer-1",
-        "layerUrl": "assets/layers/01.png",
+        "layerId": "cabin-coarse-layer-01",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/01.png",
         "semanticRegion": "天空与远山",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": false
       }
     },
@@ -371,13 +376,13 @@
       },
       "unlockAfter": "cabin-01",
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 1,
-        "layerId": "cabin-layer-2",
-        "layerUrl": "assets/layers/02.png",
+        "layerId": "cabin-coarse-layer-02",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/02.png",
         "semanticRegion": "树林",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": false
       }
     },
@@ -470,13 +475,13 @@
       },
       "unlockAfter": "cabin-02",
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 2,
-        "layerId": "cabin-layer-3",
-        "layerUrl": "assets/layers/03.png",
+        "layerId": "cabin-coarse-layer-03",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/03.png",
         "semanticRegion": "小屋",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": false
       }
     },
@@ -569,13 +574,13 @@
       },
       "unlockAfter": "cabin-03",
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 3,
-        "layerId": "cabin-layer-4",
-        "layerUrl": "assets/layers/04.png",
+        "layerId": "cabin-coarse-layer-04",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/04.png",
         "semanticRegion": "栅栏与石径",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": false
       }
     },
@@ -671,13 +676,13 @@
       },
       "unlockAfter": "cabin-04",
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 4,
-        "layerId": "cabin-layer-5",
-        "layerUrl": "assets/layers/05.png",
+        "layerId": "cabin-coarse-layer-05",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/05.png",
         "semanticRegion": "花草与毛线球",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": false
       }
     },
@@ -775,13 +780,13 @@
       },
       "unlockAfter": "cabin-05",
       "reveal": {
-        "masterId": "cabin-approved-layers-v1",
+        "masterId": "chapter-01-coarse-v1",
         "stageIndex": 5,
-        "layerId": "cabin-layer-6",
-        "layerUrl": "assets/layers/06.png",
+        "layerId": "cabin-coarse-layer-06",
+        "layerUrl": "assets/chapters/cabin-coarse-v1/layers/06.png",
         "semanticRegion": "橘白猫揭晓",
-        "semanticRegionStatus": "documented-order-asset-review-pending",
-        "mode": "path-progress",
+        "semanticRegionStatus": "user-approved-playtest",
+        "mode": "path-progress-grid25",
         "cat": true
       }
     },

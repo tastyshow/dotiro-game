@@ -11,9 +11,9 @@ for(const ch of chapters){
  ch.artwork.mapStrategy='contained-panorama-in-vertical-layout';
  ch.artwork.legacyMapCandidate=null;
  const binding=bindings[ch.chapterId];if(!binding)continue;
- Object.assign(ch,{title:binding.title,titleStatus:'confirmed-existing-theme',artworkStatus:'integrated-review-pending',visualAcceptance:binding.visualAcceptance});
- Object.assign(ch.artwork,{masterId:binding.masterId,clothUrl:binding.clothUrl,layerUrls:binding.layerUrls,assetFit:'contain',sourcePackage:binding.sourcePackage,cat:{layerIndex:5,sourceUrl:binding.layerUrls[5],revealStageId:ch.stageIds[5],visibility:'stage-6-progress-only',noBlankSilhouette:true}});
- for(const proposed of binding.stageReveal){const stage=stages.find(s=>s.stageId===proposed.stageId&&s.chapterId===ch.chapterId);if(!stage)throw Error('Artwork stage mismatch');stage.reveal={...stage.reveal,...proposed.reveal,semanticRegionStatus:'review-package-pending-user'};}
+ Object.assign(ch,{title:binding.title,titleStatus:'confirmed-existing-theme',artworkStatus:binding.artworkStatus||'integrated-review-pending',visualAcceptance:binding.visualAcceptance});
+ Object.assign(ch.artwork,{masterId:binding.masterId,clothUrl:binding.clothUrl,layerUrls:binding.layerUrls,assetFit:'contain',sourcePackage:binding.sourcePackage,...(binding.revealGroupsPerStage?{revealGroupsPerStage:binding.revealGroupsPerStage}:{}),cat:{layerIndex:5,sourceUrl:binding.layerUrls[5],revealStageId:ch.stageIds[5],visibility:'stage-6-progress-only',noBlankSilhouette:true}});
+ for(const proposed of binding.stageReveal){const stage=stages.find(s=>s.stageId===proposed.stageId&&s.chapterId===ch.chapterId);if(!stage)throw Error('Artwork stage mismatch');stage.reveal={...stage.reveal,...proposed.reveal,semanticRegionStatus:binding.visualAcceptance?.startsWith('approved-')?'user-approved-playtest':'review-package-pending-user'};}
 }
 const catalog={schemaVersion:1,contentVersion:'progression-20261010-v1',symbolIds:['red','green','blue','gold','brown'],chapters,stages};
 fs.writeFileSync(path.join(__dirname,'catalog.js'),`(function(root){const data=${JSON.stringify(catalog,null,2)};if(typeof module!=='undefined')module.exports=data;else root.DOTIRO_CHAPTER_CATALOG=data})(typeof window!=='undefined'?window:globalThis);\n`);
