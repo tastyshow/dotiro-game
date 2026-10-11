@@ -1,0 +1,254 @@
+{
+  "chapter-02": {
+    "title": "花田温室",
+    "masterId": "chapter-02-map-v1",
+    "clothUrl": "assets/chapters/chapter-02/cloth.png",
+    "layerUrls": [
+      "assets/chapters/chapter-02/layers/01.png",
+      "assets/chapters/chapter-02/layers/02.png",
+      "assets/chapters/chapter-02/layers/03.png",
+      "assets/chapters/chapter-02/layers/04.png",
+      "assets/chapters/chapter-02/layers/05.png",
+      "assets/chapters/chapter-02/layers/06.png"
+    ],
+    "stageReveal": [
+      {
+        "stageId": "chapter-02-01",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 0,
+          "layerId": "chapter-02-layer-01",
+          "layerUrl": "assets/chapters/chapter-02/layers/01.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-02-02",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 1,
+          "layerId": "chapter-02-layer-02",
+          "layerUrl": "assets/chapters/chapter-02/layers/02.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-02-03",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 2,
+          "layerId": "chapter-02-layer-03",
+          "layerUrl": "assets/chapters/chapter-02/layers/03.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-02-04",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 3,
+          "layerId": "chapter-02-layer-04",
+          "layerUrl": "assets/chapters/chapter-02/layers/04.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-02-05",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 4,
+          "layerId": "chapter-02-layer-05",
+          "layerUrl": "assets/chapters/chapter-02/layers/05.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-02-06",
+        "reveal": {
+          "masterId": "chapter-02-map-v1",
+          "stageIndex": 5,
+          "layerId": "chapter-02-layer-06",
+          "layerUrl": "assets/chapters/chapter-02/layers/06.png",
+          "mode": "path-progress",
+          "cat": true
+        }
+      }
+    ],
+    "visualAcceptance": "pending-user",
+    "assetFit": "contain",
+    "sourcePackage": "outputs/chapter-02-map-v1"
+  },
+  "chapter-03": {
+    "title": "溪谷水车",
+    "masterId": "chapter-03-map-v1",
+    "clothUrl": "assets/chapters/chapter-03/cloth.png",
+    "layerUrls": [
+      "assets/chapters/chapter-03/layers/01.png",
+      "assets/chapters/chapter-03/layers/02.png",
+      "assets/chapters/chapter-03/layers/03.png",
+      "assets/chapters/chapter-03/layers/04.png",
+      "assets/chapters/chapter-03/layers/05.png",
+      "assets/chapters/chapter-03/layers/06.png"
+    ],
+    "stageReveal": [
+      {
+        "stageId": "chapter-03-01",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 0,
+          "layerId": "chapter-03-layer-01",
+          "layerUrl": "assets/chapters/chapter-03/layers/01.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-03-02",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 1,
+          "layerId": "chapter-03-layer-02",
+          "layerUrl": "assets/chapters/chapter-03/layers/02.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-03-03",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 2,
+          "layerId": "chapter-03-layer-03",
+          "layerUrl": "assets/chapters/chapter-03/layers/03.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-03-04",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 3,
+          "layerId": "chapter-03-layer-04",
+          "layerUrl": "assets/chapters/chapter-03/layers/04.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-03-05",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 4,
+          "layerId": "chapter-03-layer-05",
+          "layerUrl": "assets/chapters/chapter-03/layers/05.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-03-06",
+        "reveal": {
+          "masterId": "chapter-03-map-v1",
+          "stageIndex": 5,
+          "layerId": "chapter-03-layer-06",
+          "layerUrl": "assets/chapters/chapter-03/layers/06.png",
+          "mode": "path-progress",
+          "cat": true
+        }
+      }
+    ],
+    "visualAcceptance": "pending-user",
+    "assetFit": "contain",
+    "sourcePackage": "outputs/chapter-03-map-v1"
+  },
+  "chapter-04": {
+    "title": "黄昏茶园",
+    "masterId": "chapter-04-map-v1",
+    "clothUrl": "assets/chapters/chapter-04/cloth.png",
+    "layerUrls": [
+      "assets/chapters/chapter-04/layers/01.png",
+      "assets/chapters/chapter-04/layers/02.png",
+      "assets/chapters/chapter-04/layers/03.png",
+      "assets/chapters/chapter-04/layers/04.png",
+      "assets/chapters/chapter-04/layers/05.png",
+      "assets/chapters/chapter-04/layers/06.png"
+    ],
+    "stageReveal": [
+      {
+        "stageId": "chapter-04-01",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 0,
+          "layerId": "chapter-04-layer-01",
+          "layerUrl": "assets/chapters/chapter-04/layers/01.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-04-02",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 1,
+          "layerId": "chapter-04-layer-02",
+          "layerUrl": "assets/chapters/chapter-04/layers/02.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-04-03",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 2,
+          "layerId": "chapter-04-layer-03",
+          "layerUrl": "assets/chapters/chapter-04/layers/03.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-04-04",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 3,
+          "layerId": "chapter-04-layer-04",
+          "layerUrl": "assets/chapters/chapter-04/layers/04.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-04-05",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 4,
+          "layerId": "chapter-04-layer-05",
+          "layerUrl": "assets/chapters/chapter-04/layers/05.png",
+          "mode": "path-progress",
+          "cat": false
+        }
+      },
+      {
+        "stageId": "chapter-04-06",
+        "reveal": {
+          "masterId": "chapter-04-map-v1",
+          "stageIndex": 5,
+          "layerId": "chapter-04-layer-06",
+          "layerUrl": "assets/chapters/chapter-04/layers/06.png",
+          "mode": "path-progress",
+          "cat": true
+        }
+      }
+    ],
+    "visualAcceptance": "pending-user",
+    "assetFit": "contain",
+    "sourcePackage": "outputs/chapter-04-map-v1"
+  }
+}

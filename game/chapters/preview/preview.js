@@ -1,0 +1,30 @@
+const E=window.DOTIRO_CHAPTERS,$=id=>document.getElementById(id),stages=E.catalog.stages;
+let session,chapterId='cabin',hinted=-1,message='从“起”开始，点按相邻格。';
+const names=['圆环','四瓣花','月牙','三角','十字'],eyes=[[216,360],[675,365],[1100,362],[1522,390],[1950,365]];
+function boot(){session=E.createSession({storage:localStorage,storageKey:$('practice').checked?'dotiro.module-preview.practice.v1':'dotiro.module-preview.sequence.v1',unlockAll:$('practice').checked});const state=session.state;let id=state.activeStageId;if(!session.isUnlocked(id))id='cabin-01';session.open(id);chapterId=E.getStage(id).chapterId;draw()}
+function symbol(c,i){if(c===null)return '<span class="neutral-dot"></span>';const[x,y]=eyes[c],s=434.4;return `<svg class="symbol" viewBox="${x-s/2} ${y-s/2} ${s} ${s}" aria-hidden="true"><defs><clipPath id="s${i}"><rect x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}"/></clipPath></defs><image href="../../assets/symbols-transparent.png" width="2172" height="724" clip-path="url(#s${i})"/></svg>`}
+function draw(){const a=session.attempt,l=a.boardSnapshot,stage=E.getStage(a.stageId),info=E.summary(a),state=session.state;const chapter=E.getChapter(chapterId);
+ $('chapters').innerHTML=E.catalog.chapters.map(c=>`<button data-chapter="${c.chapterId}" aria-current="${c.chapterId===chapterId}" aria-label="第${c.order}关"><b>第${c.order}关</b><span>${state.permanent.completedStageIds.filter(id=>c.stageIds.includes(id)).length}/6 完成</span></button>`).join('');
+ $('levels').innerHTML=chapter.stageIds.map(id=>{const s=E.getStage(id);return `<button data-stage="${id}" aria-current="${id===a.stageId}" ${session.isUnlocked(id)?'':'disabled'}><b>${s.sourceLabel}</b><span>${s.title}</span></button>`}).join('');
+ $('title').textContent=stage.title;$('group-label').textContent=`第 ${chapter.order} 关 · ${stage.sourceLabel} · ${chapter.artworkStatus==='binding-pending'?'定稿美术待绑定':'现有图层映射待视觉核验'}`;
+ $('brief').textContent=stage.brief;$('tag').textContent=`${l.size}×${l.size} · ${l.pins.length} 针点 · ${l.walls.length} 段墙`;
+ $('current').innerHTML=info.totals.map((v,c)=>`<span class="category ${info.current===c?'active':''}">${symbol(c,'legend'+c)}<b>${info.counts[c]}/${v}</b></span>`).join('');
+ const main=document.querySelector('main'),style=getComputedStyle(main),view=Math.floor(Math.min(448,main.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-4)),unit=Math.max(44,view/l.size),size=unit*l.size;
+ document.documentElement.style.setProperty('--board-size',size+'px');document.documentElement.style.setProperty('--view-size',view+4+'px');$('viewport').style.width=view+4+'px';$('cells').style.setProperty('--n',l.size);
+ $('cells').innerHTML=l.cells.map((c,i)=>`<button data-cell="${i}" class="cell ${c===null?'neutral':''} ${a.path.includes(i)?'visited':''} ${a.path.at(-1)===i?'head':''} ${!a.path.length&&i===l.start?'start':''} ${hinted===i?'hinted':''}" aria-label="第${Math.floor(i/l.size)+1}行第${i%l.size+1}列${c===null?'针点':names[c]}">${symbol(c,i)}</button>`).join('');
+ $('route').setAttribute('viewBox',`0 0 ${size} ${size}`);const xy=i=>[(i%l.size+.5)*unit,(Math.floor(i/l.size)+.5)*unit];for(const id of ['thread','fiber'])$(id).setAttribute('points',a.path.map(i=>xy(i).join(',')).join(' '));
+ $('walls').innerHTML=l.walls.map(([a,b])=>{const[x,y]=xy(a),[u,v]=xy(b),mx=(x+u)/2,my=(y+v)/2,d=unit/2;return `<path d="M${mx-(y===v?0:d)} ${my-(y===v?d:0)} L${mx+(y===v?0:d)} ${my+(y===v?d:0)}"/>`}).join('');
+ $('count').textContent=`${info.visited} / ${info.total} 针${info.won?' · 绣好了':''}`;$('stats').textContent='';$('scale').textContent=`每格 ${Math.round(unit)}px`;$('mode').hidden=true;
+ $('identity').textContent=`题目 ${a.puzzleId}`;const perm=session.artwork(a.chapterId),attempt=session.artwork(a.chapterId,{mode:'attempt',attempt:a});$('art-progress').textContent=`永久作品 ${perm.amount}/6 · 本次 ${attempt.amount.toFixed(2)}/6${attempt.catVisible?' · 猫层可揭晓':''}`;
+ $('message').textContent=session.saveError?'保存失败：本次仍可玩，离开可能丢失。':info.won?'本小关绣好了；可继续或主动重玩换题。':message;
+ $('undo').disabled=!a.path.length;$('restart').disabled=!a.path.length;$('hint').disabled=info.won;$('replay').disabled=!state.permanent.completedStageIds.includes(a.stageId)&&!$('practice').checked;
+ const next=stages[stages.findIndex(s=>s.stageId===a.stageId)+1];$('next').disabled=!next||!session.isUnlocked(next.stageId);$('next').textContent=stage.order===6?'下一关':'下一小关';
+ $('rating-note').textContent='体验模式的跳关不越级增加永久解锁记录。';
+}
+function open(id,options){const r=session.open(id,options);if(r.ok){chapterId=r.attempt.chapterId;hinted=-1;message='从“起”开始，点按相邻格。'}else message='该小关尚未解锁。';draw()}
+$('chapters').onclick=e=>{const b=e.target.closest('[data-chapter]');if(b){const c=E.getChapter(b.dataset.chapter);const id=c.stageIds.find(id=>session.isUnlocked(id)&&!session.state.permanent.completedStageIds.includes(id))||c.stageIds[0];if(session.isUnlocked(id))open(id);else{message='完成上一关后开启；也可勾选自由跳关体验。';draw()}}};
+$('levels').onclick=e=>{const b=e.target.closest('[data-stage]');if(b)open(b.dataset.stage)};
+$('cells').onclick=e=>{const b=e.target.closest('[data-cell]');if(!b)return;const r=session.move(Number(b.dataset.cell),{rewind:true});hinted=-1;message=r.ok?'连完当前图案，再接下一种。':({start:'从“起”开始。',wall:'挡线不能穿过。',category:'先连完当前图案。',adjacent:'只连上下左右相邻格。',complete:'本次已完成，可以重来或主动重玩。'})[r.reason]||'不能这样连接。';draw()};
+$('undo').onclick=()=>{session.undo();hinted=-1;message='已退一针。';draw()};$('restart').onclick=()=>{session.restart();hinted=-1;message='原题已重来。';draw()};$('replay').onclick=()=>open(session.attempt.stageId,{replay:true});$('next').onclick=()=>{const i=stages.findIndex(s=>s.stageId===session.attempt.stageId);if(stages[i+1])open(stages[i+1].stageId)};
+$('hint').onclick=()=>{const h=session.hint();hinted=h.cell??-1;message=({found:'试着连接亮起的格。',rewind:'点亮起的旧位置撤回。',restart:'请重来并从起点再试。',limited:'推演达到上限，请先退一针再试。',complete:'本次已完成。',unsolvable:'题目异常，未找到合法路线。'})[h.status];draw()};
+$('practice').onchange=boot;window.addEventListener('resize',draw);$('ratings').onclick=e=>{const b=e.target.closest('[data-rating]');if(b)$('rating-note').textContent=`本次反馈：${b.dataset.rating}（未上传）`};boot();

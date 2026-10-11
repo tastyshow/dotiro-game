@@ -1,0 +1,19 @@
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../difficulty-progression/levels.js'),'utf8'),ctx);
+const ids=['cabin','chapter-02','chapter-03','chapter-04'];
+const chapter1Names=['天空与远山','树林','小屋','栅栏与石径','花草与毛线球','橘白猫揭晓'];
+const chapters=ids.map((chapterId,i)=>({chapterId,order:i+1,title:i===0?'林间小屋':`第${i+1}章`,titleStatus:i===0?'confirmed':'approved-art-reference-not-found',gameplayStatus:'playable-module',artworkStatus:i===0?'existing-layers-map-consistency-pending':'binding-pending',stageIds:Array.from({length:6},(_,j)=>`${chapterId}-${String(j+1).padStart(2,'0')}`),unlockAfter:i?`${ids[i-1]}-06`:null,artwork:{masterId:i===0?'cabin-approved-layers-v1':null,layerUrls:i===0?Array.from({length:6},(_,j)=>`assets/layers/0${j+1}.png`):Array(6).fill(null),coverStrategy:'same-layer-stack',mapAsset:null,legacyMapCandidate:i===0?'assets/map-portrait-base.png':null,mapBindingStatus:'pending-same-source-review',cat:i===0?{layerIndex:5,sourceUrl:'assets/layers/06.png',revealStageId:'cabin-06',visibility:'only-current-stage-6-progress-or-permanent-stage-6',noBlankSilhouette:true}:null}}));
+const stages=ctx.window.LAB_LEVELS.map(l=>{const chapterId=ids[l.chapter-1],stageId=`${chapterId}-${String(l.stage).padStart(2,'0')}`;return {schemaVersion:1,chapterId,stageId,order:l.stage,size:l.size,width:l.size,height:l.size,start:l.start,freeStart:false,cells:l.cells,pins:l.cells.flatMap((c,i)=>c===null?[i]:[]),walls:l.walls,solution:l.solution,generatorVersion:'isomorphic-v1',seed:0,sourceLabel:l.label,source:l.source||'difficulty-progression',title:l.title,brief:l.brief,difficulty:{chapterTier:l.chapter,stageStep:l.stage,wallStyle:l.wallStyle,metrics:l.metrics,assessment:'candidate-pending-human-calibration',solutionCountIsDifficulty:false},unlockAfter:l.stage>1?`${chapterId}-${String(l.stage-1).padStart(2,'0')}`:chapters[l.chapter-1].unlockAfter,reveal:{masterId:chapters[l.chapter-1].artwork.masterId,stageIndex:l.stage-1,layerId:`${chapterId}-layer-${l.stage}`,layerUrl:chapters[l.chapter-1].artwork.layerUrls[l.stage-1],semanticRegion:l.chapter===1?chapter1Names[l.stage-1]:null,semanticRegionStatus:l.chapter===1?'documented-order-asset-review-pending':'approved-reference-binding-pending',mode:'path-progress',cat:l.chapter===1&&l.stage===6}}});
+// Durable artwork binding source; gameplay contentVersion remains unchanged.
+const bindings=JSON.parse(fs.readFileSync(path.join(__dirname,'artwork-bindings.json'),'utf8'));
+for(const ch of chapters){
+ ch.artwork.mapBindingStatus='same-layer-stack-contained-panorama';
+ ch.artwork.mapStrategy='contained-panorama-in-vertical-layout';
+ ch.artwork.legacyMapCandidate=null;
+ const binding=bindings[ch.chapterId];if(!binding)continue;
+ Object.assign(ch,{title:binding.title,titleStatus:'confirmed-existing-theme',artworkStatus:'integrated-review-pending',visualAcceptance:binding.visualAcceptance});
+ Object.assign(ch.artwork,{masterId:binding.masterId,clothUrl:binding.clothUrl,layerUrls:binding.layerUrls,assetFit:'contain',sourcePackage:binding.sourcePackage,cat:{layerIndex:5,sourceUrl:binding.layerUrls[5],revealStageId:ch.stageIds[5],visibility:'stage-6-progress-only',noBlankSilhouette:true}});
+ for(const proposed of binding.stageReveal){const stage=stages.find(s=>s.stageId===proposed.stageId&&s.chapterId===ch.chapterId);if(!stage)throw Error('Artwork stage mismatch');stage.reveal={...stage.reveal,...proposed.reveal,semanticRegionStatus:'review-package-pending-user'};}
+}
+const catalog={schemaVersion:1,contentVersion:'progression-20261010-v1',symbolIds:['red','green','blue','gold','brown'],chapters,stages};
+fs.writeFileSync(path.join(__dirname,'catalog.js'),`(function(root){const data=${JSON.stringify(catalog,null,2)};if(typeof module!=='undefined')module.exports=data;else root.DOTIRO_CHAPTER_CATALOG=data})(typeof window!=='undefined'?window:globalThis);\n`);

@@ -33,3 +33,57 @@ body{background:transparent}.header-actions{display:flex;align-items:center;gap:
 
 /* Chapter selection: one landscape embroidered work per vertical row. */
 .chapter-list{display:flex;flex-direction:column;gap:24px;margin:18px 6px 24px}.chapter-list .chapter-card{display:block;position:relative;width:100%;margin:0;padding:12px;border:0;background:transparent;color:inherit;text-align:left;font:inherit;box-sizing:border-box}.chapter-card .art{display:block;width:100%;height:auto;aspect-ratio:3/1}.chapter-card .card-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px}.chapter-card h2{margin:0;min-width:0}.chapter-card h2 .stitched-label{width:140px;height:48px}.chapter-progress{white-space:nowrap;font-size:20px}.chapter-list .chapter-locked{min-height:150px;display:flex;align-items:center;justify-content:center}.chapter-locked .stitched-label{width:140px;height:58px}.chapter-card:focus-visible{outline:3px dashed #796044;outline-offset:8px}
+
+/* UI integration 2026-10-10: retain assets and preserve usable board size. */
+.cells{grid-template-columns:repeat(var(--columns,5),1fr);grid-template-rows:repeat(var(--rows,5),1fr)}
+.cell,.cell:nth-child(5n),.cell:nth-child(n+21){border-right-width:var(--cell-right,1px);border-bottom-width:var(--cell-bottom,1px)}
+button:disabled{opacity:.5}.node:disabled{opacity:1}
+.game-shell .sound{min-width:44px;min-height:44px;flex-shrink:0}
+#app:has(.game-shell){padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+.game-shell .instruction{line-height:1.35}.message-space{min-height:34px}
+.game-shell{grid-template-rows:44px 40px auto 18px minmax(220px,1fr) 34px 48px}
+/* Compact phones retain a square board; the artwork stays at its 3:1 ratio. */
+@media(max-height:740px) and (orientation:portrait){
+ .game-shell{grid-template-rows:44px 32px auto 0 minmax(220px,1fr) 34px 44px;gap:4px}
+ .game-shell .progress-dots{display:none}
+ .game-shell .art-frame{width:min(100%,300px);justify-self:center}
+ .game-shell header{height:44px}.game-shell .chapter-heading h1,.game-shell .chapter-heading h1 .stitched-label{height:32px}
+}
+/* Very short portrait viewports scroll instead of hiding or crushing controls. */
+@media(max-height:560px) and (orientation:portrait){
+ body:has(.game-shell){overflow:auto}#app:has(.game-shell){height:auto;min-height:var(--app-height,100svh)}
+ .game-shell{height:auto;grid-template-rows:44px 32px auto 0 240px 34px 44px}
+}
+@media(orientation:landscape) and (max-height:600px){
+ body:has(.game-shell){overflow:auto}#app:has(.game-shell){max-width:1000px;height:auto;min-height:var(--app-height,100svh)}
+ .game-shell{height:auto;min-height:calc(var(--app-height,100svh) - 24px);grid-template-columns:minmax(180px,1fr) minmax(240px,1.3fr);grid-template-rows:44px 32px minmax(70px,1fr) 34px 48px;gap:6px 20px}
+ .game-shell header{grid-column:1;grid-row:1}.game-shell .chapter-heading{grid-column:1;grid-row:2}
+ .game-shell .art-frame{grid-column:1;grid-row:3;align-self:center}.game-shell .progress-dots{display:none}
+ .game-shell .board-space{grid-column:2;grid-row:1/5;min-height:240px}
+ .game-shell .message-space{grid-column:1;grid-row:4}.game-shell .toolbar{grid-column:2;grid-row:5}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(orientation:portrait), (min-height:601px){
+ .game-shell>header{grid-row:1}.game-shell>.chapter-heading{grid-row:2}.game-shell>.art-frame{grid-row:3}
+ .game-shell>.progress-dots{grid-row:4}.game-shell>.board-space{grid-row:5}.game-shell>.message-space{grid-row:6}.game-shell>.toolbar{grid-row:7}
+}
+/* 24-stage session integration: pending artwork is explicit, never a borrowed cover. */
+.pending-art{min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;color:#684027;text-align:center}
+.pending-art strong{font-size:18px}.pending-art span,.asset-note{font-size:12px;line-height:1.5}.asset-note{padding:6px 2px}
+.chapter-card .pending-art{aspect-ratio:3/1}.chapter-lock-label{display:block;text-align:right}.chapter-lock-label .stitched-label{width:84px;height:35px}
+.chapter-locked-entry:disabled{opacity:.7}.next-chapter{align-self:center}.next-chapter .stitched-label{width:130px;height:44px}
+.system-notices{font-size:12px;line-height:1.5;text-align:center}.system-notices:has(p:not(:empty)){padding:8px 0}.system-notices button{min-height:44px;padding:0 10px}.system-notices p{margin:0}
+.walls{position:absolute;left:7px;top:7px;width:calc(100% - 14px);height:calc(100% - 14px);pointer-events:none;overflow:visible;z-index:4}
+.walls path{fill:none;stroke-linecap:round;stroke-linejoin:round}.wall-shadow{stroke:#51351f;stroke-width:1.45}.wall-thread{stroke:#94603d;stroke-width:1.1}.wall-stitches{stroke:#e5b580;stroke-width:.25;stroke-dasharray:.3 .6}
+.needle-pin{width:14%;height:14%;min-width:7px;min-height:7px;max-width:12px;max-height:12px;border:2px solid #795536;border-radius:50%;background:#593a26;box-shadow:inset 1px 1px 1px #342012,0 1px 1px #f4ddb9;pointer-events:none}
+.finish .completion-note{font-size:14px;color:#684027}.game-shell .art-frame .pending-art{height:100%;min-height:0}
+body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overscroll-behavior:contain;justify-content:flex-start;align-items:flex-start}
+.board{width:max(var(--board-min,234px),min(100cqw,100cqh));height:max(var(--board-min,234px),min(100cqw,100cqh));flex-shrink:0;margin:auto}
+@media(orientation:portrait){
+ .game-shell{min-height:calc(var(--board-min,234px) + 280px);grid-template-rows:44px 32px auto 0 minmax(var(--board-min,234px),1fr) 34px 44px;gap:4px}
+ .game-shell>.progress-dots{display:none}.game-shell .art-frame{width:min(100%,300px);justify-self:center}.game-shell .chapter-heading h1,.game-shell .chapter-heading h1 .stitched-label{height:32px}
+}
+@media(orientation:landscape) and (max-height:600px){.game-shell{min-height:calc(var(--board-min,234px) + 54px)}.board-space{min-height:var(--board-min,234px)}}
+
+.toolbar .pan-button{display:none}.board.pan-mode{touch-action:pan-x pan-y;cursor:grab}
+@media(max-width:342px){.game-shell[data-grid="7"] .toolbar{gap:4px;padding:0}.game-shell[data-grid="7"] .pan-button{display:block;font-size:13px;flex:.65;min-width:44px}}
