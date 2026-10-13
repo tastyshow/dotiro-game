@@ -125,4 +125,6 @@ body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overs
 /* The artwork sits on its own coarse cloth panel, with a quiet raised edge. */
 .game-shell .art-frame{aspect-ratio:auto;padding:6px;background:#dcc29f url('assets/fabric-approved.svg') center/180px 110px;border:1px solid #b68e67;border-radius:7px;box-shadow:0 4px 9px #68462955,inset 0 1px 1px #fff1d5;isolation:isolate}
 .game-shell .art-frame .art{display:block;width:100%;height:auto;aspect-ratio:3/1;border-radius:2px;box-shadow:inset 0 0 0 1px #866044}
-.game-shell .art-frame:after{transform:translateZ(0)}
+.game-shell .art-frame:after{border-image:url('assets/sewn-frame.svg') 22 round;transform:none}
+#app:has(.game-shell){height:100svh}
+.loading-cloth{min-height:100svh;background:url('assets/fabric-approved.svg') center/180px 110px}
