@@ -136,10 +136,11 @@ function update(message=''){
  const sewnCells=new Set(path);A.querySelectorAll('.route [data-eye]').forEach(eye=>eye.classList.toggle('sewn-eye',sewnCells.has(Number(eye.dataset.eye))));
  const instruction=A.querySelector('#instruction');let prompt=info.won?'这一段，完成了。':!path.length?'从针头的位置开始':l.cells[path.at(-1)]===null?'针点连过去，图案不换类':info.completed.includes(info.current)?'接着连下一种图案':'连完同一种图案';
  instruction.setAttribute('aria-label',message||prompt);instruction.innerHTML='';instruction.classList.toggle('error',!!message);A.querySelector('#board').classList.toggle('move-rejected',!!message);
- for(const a of ['undo','restart'])A.querySelector(`[data-action="${a}"]`).disabled=!path.length||info.won;
+ A.querySelector('[data-action="undo"]').disabled=!path.length||info.won;
+ A.querySelector('[data-action="restart"]').disabled=!path.length;
  A.querySelector('[data-action="hint"]').disabled=info.won;
  if(changed){animateThread();paintAnimate(targetAmount())}
- const finish=A.querySelector('#finish');if(!info.won){clearTimeout(timer);timer=null;finish.innerHTML=''}else{finish.innerHTML='<span class="completion-needle" aria-label="收好这一针">'+icon('hint')+'</span>';finishAfterPaint()}
+ const finish=A.querySelector('#finish');finish.innerHTML='';if(!info.won){clearTimeout(timer);timer=null}else finishAfterPaint();
  showSaveError();
 }
 function attemptCell(i,options){if(!current||won())return false;hinted=-1;const result=session.move(i,options);if(result.ok){refreshAttempt();update();if(result.changed)tone();return true}update(({start:'从针头的位置开始',adjacent:'只能上下左右相邻连接',wall:'这里有绣线墙，请绕过去',category:'这一种图案还没连完',visited:'沿线回拖，或点旧位置撤回'})[result.reason]||'');return false}
