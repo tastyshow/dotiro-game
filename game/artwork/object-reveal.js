@@ -19,27 +19,76 @@ function regionFor(x,y,objects){
  for(const entry of candidates){const o=entry.o;const dx=(nx-o.center[0])*W/H,dy=ny-o.center[1],dist=dx*dx+dy*dy;if(dist<distance){distance=dist;best=entry}}
  return best.i;
 }
-function buildSequence(pixels,groups){
+// Keep each visible sewing pass inside one connected patch before moving to another.
+function sewConnected(list,cw,ch){
+ const lookup=new Map(list.map(t=>[`${t.x},${t.y}`,t])),seen=new Set(),patches=[];
+ for(const seed of list){if(seen.has(seed))continue;const stack=[seed],patch=[];seen.add(seed);
+  while(stack.length){const t=stack.pop();patch.push(t);
+   for(const [dx,dy] of [[-cw,0],[cw,0],[-cw/2,-ch],[cw/2,-ch],[-cw/2,ch],[cw/2,ch]]){
+    const other=lookup.get(`${t.x+dx},${t.y+dy}`);if(other&&!seen.has(other)){seen.add(other);stack.push(other)}
+   }
+  }
+  // Rows of adjoining stitches are laid in alternating directions, like filling fabric.
+  patch.sort((a,b)=>Math.floor(a.x/128)-Math.floor(b.x/128)||a.y-b.y||(Math.floor(a.y/ch)%2?-1:1)*(a.x-b.x));
+  if(patch.length<=3)for(const t of patch)t.island=true;patches.push(patch);
+ }
+ patches.sort((a,b)=>b.length-a.length||a[0].y-b[0].y);
+ const result=[],first=patches.shift();if(first)result.push(...first);
+ while(patches.length){const last=result[result.length-1];let best=0,distance=Infinity;
+  for(let i=0;i<patches.length;i++){const start=patches[i][0],d=Math.hypot(start.x-last.x,start.y-last.y);if(d<distance){distance=d;best=i}}
+  result.push(...patches.splice(best,1)[0]);
+ }
+ return result;
+}
+function buildSequence(pixels,groups,stitchSize){
+ const cw=stitchSize?.width||CW,ch=stitchSize?.height||CH;
  const objects=groups||[{id:'scene',label:'当前物体',center:[.5,.5],bounds:[0,0,1,1],colorOrder:Object.keys(palette)}];
  const bins=objects.map(()=>Object.fromEntries(Object.keys(palette).map(k=>[k,[]])));
- for(let y=0;y<H;y+=CH)for(let x=0;x<W;x+=CW){
+ for(let y=0;y<H;y+=ch)for(let x=stitchSize&&Math.floor(y/ch)%2?cw/2:0;x<W;x+=cw){
   let r=0,g=0,b=0,weight=0;
-  for(let yy=y;yy<Math.min(H,y+CH);yy++)for(let xx=x;xx<Math.min(W,x+CW);xx++){
+  for(let yy=y;yy<Math.min(H,y+ch);yy++)for(let xx=x;xx<Math.min(W,x+cw);xx++){
    const k=(yy*W+xx)*4,a=pixels[k+3]/255;if(a){weight+=a;r+=pixels[k]*a;g+=pixels[k+1]*a;b+=pixels[k+2]*a}
   }
   if(!weight)continue;
-  const object=regionFor(x+CW/2,y+CH/2,objects),o=objects[object];
+  const object=regionFor(x+cw/2,y+ch/2,objects),o=objects[object];
   const color=threadColor(r/weight,g/weight,b/weight);
   const dx=(x-o.center[0]*W)/H,dy=(y-o.center[1]*H)/H;
   // A local curved wave, with deterministic small stitch variation; no row index.
   const angle=Math.atan2(dy,dx),noise=((x*73856093^y*19349663)>>>0)%997/997;
   const flow=Math.hypot(dx,dy)+Math.sin(angle*3)*.014+noise*.016;
-  bins[object][color].push({x,y,flow,object,color,label:o.label});
+  let stitchAngle=0;
+  if(stitchSize){
+   let xx=0,xy=0,yy=0;
+   const luminance=(px,py)=>{const k=(Math.max(0,Math.min(H-1,py))*W+Math.max(0,Math.min(W-1,px)))*4;return pixels[k]*.213+pixels[k+1]*.715+pixels[k+2]*.072};
+   for(let sy=2;sy<ch;sy+=3)for(let sx=3;sx<cw-2;sx+=4){const px=Math.floor(x+sx),py=Math.floor(y+sy),gx=luminance(px+2,py)-luminance(px-2,py),gy=luminance(px,py+2)-luminance(px,py-2);xx+=gx*gx;xy+=gx*gy;yy+=gy*gy}
+   stitchAngle=.5*Math.atan2(2*xy,xx-yy)+Math.PI/2;
+  }
+  bins[object][color].push({x,y,width:cw,height:ch,angle:stitchAngle,flow,object,color,label:o.label});
  }
  const tiles=[];let batch=0;
- objects.forEach((o,i)=>{
+ const objectOrder=objects.map((o,i)=>({o,i}));
+ // In the forest scene, sew the central undergrowth before the distant right trees.
+ if(objects.some(o=>o.id==='bushes')&&objects.some(o=>o.id==='pines-right'))
+  objectOrder.sort((a,b)=>(a.o.id==='bushes'?2:a.o.id==='pines-right'?3:a.i)-(b.o.id==='bushes'?2:b.o.id==='pines-right'?3:b.i));
+ objectOrder.forEach(({o,i})=>{
   const colors=[...new Set([...(o.colorOrder||[]),...Object.keys(palette)])].filter(c=>palette[c]);
-  for(const c of colors){const list=bins[i][c];if(!list.length)continue;list.sort((a,b)=>a.flow-b.flow);for(const t of list){t.batch=batch;tiles.push(t)}batch++}
+  if(stitchSize){
+   // Finish a nearby piece of the motif before carrying the needle elsewhere.
+   // A global pass per colour made distant trunks appear without their leaves.
+   const pieces=new Map(),horizontal=o.id==='sky'||o.id.includes('cloud')||o.id==='mountains';
+   for(const c of colors)for(const t of bins[i][c]){
+    const col=Math.floor(t.x/160),row=Math.floor(t.y/112),key=`${col},${row}`;
+    if(!pieces.has(key))pieces.set(key,{col,row,tiles:[]});
+    pieces.get(key).tiles.push(t);
+   }
+   const orderedPieces=[...pieces.values()].sort((a,b)=>horizontal?
+    a.row-b.row||(a.row%2?b.col-a.col:a.col-b.col):
+    a.col-b.col||(a.col%2?b.row-a.row:a.row-b.row));
+   for(const piece of orderedPieces)for(const c of colors){
+    const list=piece.tiles.filter(t=>t.color===c);if(!list.length)continue;
+    for(const t of sewConnected(list,cw,ch)){t.batch=batch;tiles.push(t)}batch++;
+   }
+  }else for(const c of colors){const list=bins[i][c];if(!list.length)continue;for(const t of list.sort((a,b)=>a.flow-b.flow)){t.batch=batch;tiles.push(t)}batch++}
  });
  return tiles;
 }
