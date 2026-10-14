@@ -129,3 +129,11 @@ body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overs
 #app:has(.game-shell){height:100svh}
 .game-shell .art-frame:before,.game-shell .art-frame:after{transform:translateZ(0);backface-visibility:hidden}
 .loading-cloth{min-height:100svh;background:url('assets/fabric-approved.svg') center/180px 110px}
+
+/* The board rope is a static sibling of the changing cells and thread.
+   iOS Safari intermittently dropped the old SVG border-image pseudo-element while dragging. */
+.game-shell .board-mount{position:relative;width:max(var(--board-min,234px),min(100cqw,100cqh));height:max(var(--board-min,234px),min(100cqw,100cqh));flex-shrink:0;margin:auto}
+.game-shell[data-stage^="cabin-"] .board-mount{width:min(100cqw,100cqh);height:min(100cqw,100cqh)}
+.game-shell .board-mount .board{width:100%;height:100%;margin:0}
+.game-shell .board:before,.game-shell .board:after{content:none}
+.board-frame-static{position:absolute;inset:-3px;border:8px solid transparent;border-image:url('assets/frame-nine-v4.png') 32 round;pointer-events:none;z-index:10;transform:translate3d(0,0,0);backface-visibility:hidden}
