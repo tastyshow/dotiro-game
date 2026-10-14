@@ -127,4 +127,5 @@ body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overs
 .game-shell .art-frame .art{display:block;width:100%;height:auto;aspect-ratio:3/1;border-radius:2px;box-shadow:inset 0 0 0 1px #866044}
 .game-shell .art-frame:after{border-image:url('assets/sewn-frame.svg') 22 round;transform:none}
 #app:has(.game-shell){height:100svh}
+.game-shell .art-frame:before,.game-shell .art-frame:after{transform:translateZ(0);backface-visibility:hidden}
 .loading-cloth{min-height:100svh;background:url('assets/fabric-approved.svg') center/180px 110px}
