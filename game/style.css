@@ -159,3 +159,13 @@ body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overs
 .chapter-list .chapter-locked-entry .chapter-progress{margin-bottom:20px}
 
 .reset-dialog h2{height:44px;width:100%;margin:0}.reset-dialog h2 .sewn-word{width:100%;height:44px}.reset-dialog p{width:100%;height:36px;margin:14px 0 20px}.reset-dialog p .sewn-word{width:100%;height:36px}.reset-dialog form>div{display:flex;justify-content:space-between;align-items:center;gap:15px}.reset-dialog .reset-cancel,.reset-dialog .reset-confirm{display:block;border:0;background:none;padding:0;height:56px}.reset-dialog .reset-cancel{width:72px}.reset-dialog .reset-confirm{width:174px}.reset-dialog .reset-cancel .stitched-label,.reset-dialog .reset-confirm .sprite{width:100%;height:100%}
+/* The four 3:1 chapter canvases touch edge to edge inside one portrait piece. */
+.chapter-list{padding:5px;gap:0}
+.chapter-list .chapter-card{position:relative;display:block;min-height:0;padding:0;margin:0;border:0;border-bottom:1px solid #b99873}
+.chapter-list .chapter-card:last-child{border-bottom:0}
+.chapter-list .chapter-card .art,.chapter-list .chapter-card .album-empty-cloth{display:block;width:100%;aspect-ratio:3/1;height:auto;margin:0;border:0;border-radius:0}
+.chapter-list .chapter-card .card-bottom{position:absolute;top:5px;left:6px;right:6px;display:flex;align-items:flex-start;justify-content:space-between;min-height:0;height:34px;margin:0;pointer-events:none}
+.chapter-list .chapter-name{width:min(54%,158px);height:34px;filter:drop-shadow(0 1px 1px #f8dfb0)}
+.chapter-list .chapter-progress{height:26px;margin:3px 0 0;filter:drop-shadow(0 1px 1px #543722)}
+.chapter-list .chapter-locked-entry .chapter-progress{margin:3px 0 0}
+.chapter-list .chapter-lock-label{right:6px;bottom:4px;width:72px;height:25px}
