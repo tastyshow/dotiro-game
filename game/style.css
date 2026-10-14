@@ -136,4 +136,4 @@ body:has(.game-shell){overflow:auto}.board-space{min-width:0;overflow:auto;overs
 .game-shell[data-stage^="cabin-"] .board-mount{width:min(100cqw,100cqh);height:min(100cqw,100cqh)}
 .game-shell .board-mount .board{width:100%;height:100%;margin:0}
 .game-shell .board:before,.game-shell .board:after{content:none}
-.board-frame-static{position:absolute;inset:-3px;border:8px solid transparent;border-image:url('assets/frame-nine-v4.png') 32 round;pointer-events:none;z-index:10;transform:translate3d(0,0,0);backface-visibility:hidden}
+.board-frame-static{position:absolute;top:-3px;left:-3px;width:calc(100% + 6px);height:calc(100% + 6px);display:block;object-fit:fill;pointer-events:none;z-index:10;transform:translate3d(0,0,0);backface-visibility:hidden}
